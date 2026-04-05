@@ -279,11 +279,6 @@ export function CalendarMain({ selectedDate, onDateSelect, onMenuClick, events, 
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input placeholder="Search events..." className="pl-10 w-64 h-9" />
             </div>
-
-            <Button className="gap-2">
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">New Event</span>
-            </Button>
           </div>
         </div>
 

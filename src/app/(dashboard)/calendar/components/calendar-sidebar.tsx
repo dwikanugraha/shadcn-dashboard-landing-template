@@ -25,41 +25,39 @@ export function CalendarSidebar({
   className
 }: CalendarSidebarProps) {
   return (
-    <div className={`flex flex-col h-full bg-background ${className}`}>
-      {/* Add New Event Button */}
-      <div className="p-5 border-b bg-muted/30">
+    <div className={`flex flex-col h-full bg-background rounded-lg ${className}`}>
+      {/* Add New Task Button */}
+      <div className="p-6 border-b">
         <Button
-          className="w-full h-10 font-medium"
+          className="w-full cursor-pointer"
           onClick={onNewEvent}
         >
           <Plus className="w-4 h-4 mr-2" />
-          Create Event
+          Add New Task
         </Button>
       </div>
 
       {/* Date Picker */}
-      <div className="p-5">
-        <DatePicker
-          selectedDate={selectedDate}
-          onDateSelect={onDateSelect}
-          events={events}
-        />
-      </div>
+      <DatePicker
+        selectedDate={selectedDate}
+        onDateSelect={onDateSelect}
+        events={events}
+      />
 
-      <Separator className="mx-5" />
+      <Separator />
 
-      {/* Calendars */}
-      <div className="flex-1 p-5 overflow-y-auto">
+      {/* Tasks */}
+      <div className="flex-1 p-4">
         <Calendars
           onNewCalendar={onNewCalendar}
-          onCalendarToggle={(calendarId, visible) => {
-            console.log(`Calendar ${calendarId} visibility: ${visible}`)
+          onTaskToggle={(taskId, completed) => {
+            console.log(`Task ${taskId} completed: ${completed}`)
           }}
-          onCalendarEdit={(calendarId) => {
-            console.log(`Edit calendar: ${calendarId}`)
+          onTaskEdit={(taskId) => {
+            console.log(`Edit task: ${taskId}`)
           }}
-          onCalendarDelete={(calendarId) => {
-            console.log(`Delete calendar: ${calendarId}`)
+          onTaskDelete={(taskId) => {
+            console.log(`Delete task: ${taskId}`)
           }}
         />
       </div>

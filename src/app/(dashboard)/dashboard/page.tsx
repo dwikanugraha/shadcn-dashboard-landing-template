@@ -1,4 +1,3 @@
-import { ChartAreaInteractive } from "./components/chart-area-interactive"
 import { DataTable } from "./components/data-table"
 import { SectionCards } from "./components/section-cards"
 
@@ -20,7 +19,6 @@ export default function Page() {
 
       <div className="@container/main px-4 lg:px-6 space-y-6">
         <SectionCards />
-        <ChartAreaInteractive />
       </div>
       <div className="@container/main">
         <DataTable

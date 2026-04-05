@@ -1,13 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Check, ChevronRight, Plus, Eye, EyeOff, MoreHorizontal } from "lucide-react"
+import { Check, Plus, MoreHorizontal, Clock } from "lucide-react"
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,177 +12,128 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
-interface CalendarItem {
+interface TaskItem {
   id: string
-  name: string
+  title: string
   color: string
-  visible: boolean
-  type: "personal" | "work" | "shared"
-}
-
-interface CalendarGroup {
-  name: string
-  items: CalendarItem[]
+  completed: boolean
+  time?: string
 }
 
 interface CalendarsProps {
-  calendars?: {
-    name: string
-    items: string[]
-  }[]
-  onCalendarToggle?: (calendarId: string, visible: boolean) => void
-  onCalendarEdit?: (calendarId: string) => void
-  onCalendarDelete?: (calendarId: string) => void
-  onNewCalendar?: () => void
+  onTaskToggle?: (taskId: string, completed: boolean) => void
+  onTaskEdit?: (taskId: string) => void
+  onTaskDelete?: (taskId: string) => void
+  onNewTask?: () => void
 }
 
-const enhancedCalendars: CalendarGroup[] = [
-  {
-    name: "My Calendars",
-    items: [
-      { id: "personal", name: "Personal", color: "bg-indigo-500", visible: true, type: "personal" },
-      { id: "work", name: "Work", color: "bg-emerald-500", visible: true, type: "work" },
-      { id: "family", name: "Family", color: "bg-rose-500", visible: true, type: "personal" }
-    ]
-  },
-  {
-    name: "Favorites",
-    items: [
-      { id: "holidays", name: "Holidays", color: "bg-amber-500", visible: true, type: "shared" },
-      { id: "birthdays", name: "Birthdays", color: "bg-violet-500", visible: true, type: "personal" }
-    ]
-  },
-  {
-    name: "Other",
-    items: [
-      { id: "travel", name: "Travel", color: "bg-cyan-500", visible: false, type: "personal" },
-      { id: "reminders", name: "Reminders", color: "bg-orange-500", visible: true, type: "personal" },
-      { id: "deadlines", name: "Deadlines", color: "bg-red-500", visible: true, type: "work" }
-    ]
-  }
+// Task data
+const tasks: TaskItem[] = [
+  { id: "task-1", title: "Review project proposal", color: "bg-blue-500", completed: false, time: "10:00 AM" },
+  { id: "task-2", title: "Team standup meeting", color: "bg-green-500", completed: false, time: "11:00 AM" },
+  { id: "task-3", title: "Update documentation", color: "bg-pink-500", completed: false, time: "2:00 PM" },
+  { id: "task-4", title: "Design review", color: "bg-red-500", completed: false, time: "3:00 PM" },
+  { id: "task-5", title: "Code review", color: "bg-purple-500", completed: false, time: "4:00 PM" },
+  { id: "task-6", title: "Client presentation", color: "bg-orange-500", completed: true, time: "Yesterday" },
+  { id: "task-7", title: "Sprint planning", color: "bg-yellow-500", completed: true, time: "Monday" },
+  { id: "task-8", title: "Bug fixes", color: "bg-red-600", completed: true, time: "Monday" }
 ]
 
 export function Calendars({
-  onCalendarToggle,
-  onCalendarEdit,
-  onCalendarDelete,
-  onNewCalendar
+  onTaskToggle,
+  onTaskEdit,
+  onTaskDelete,
+  onNewTask
 }: CalendarsProps) {
-  const [calendarData, setCalendarData] = useState(enhancedCalendars)
+  const [taskData, setTaskData] = useState(tasks)
 
-  const handleToggleVisibility = (calendarId: string) => {
-    setCalendarData(prev => prev.map(group => ({
-      ...group,
-      items: group.items.map(item =>
-        item.id === calendarId
-          ? { ...item, visible: !item.visible }
-          : item
-      )
-    })))
+  const handleToggleComplete = (taskId: string) => {
+    setTaskData(prev => prev.map(item =>
+      item.id === taskId
+        ? { ...item, completed: !item.completed }
+        : item
+    ))
 
-    const calendar = calendarData.flatMap(g => g.items).find(c => c.id === calendarId)
-    if (calendar) {
-      onCalendarToggle?.(calendarId, !calendar.visible)
+    const task = taskData.find(t => t.id === taskId)
+    if (task) {
+      onTaskToggle?.(taskId, !task.completed)
     }
   }
 
   return (
-    <div className="space-y-4">
-      {calendarData.map((calendar, index) => (
-        <div key={calendar.name}>
-          <Collapsible
-            defaultOpen={index === 0}
-            className="group/collapsible"
-          >
-            <CollapsibleTrigger className="flex items-center justify-between w-full px-2 py-2.5 hover:bg-accent hover:text-accent-foreground rounded-lg cursor-pointer transition-colors">
-              <span className="text-sm font-semibold">{calendar.name}</span>
-              <div className="flex items-center gap-1">
-                {index === 0 && (
-                  <div
-                    className="h-6 w-6 flex items-center justify-center opacity-0 group-hover/collapsible:opacity-100 cursor-pointer hover:bg-accent rounded-md transition-opacity"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onNewCalendar?.()
-                    }}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
+    <div className="space-y-2">
+      {taskData.map((item) => (
+        <div key={item.id} className="group/task-item">
+          <div className={cn(
+            "flex items-center justify-between p-2.5 hover:bg-accent/50 rounded-md cursor-pointer transition-colors",
+            item.completed && "opacity-60"
+          )}>
+            <div className="flex items-center gap-3 flex-1">
+              {/* Task Checkbox */}
+              <button
+                onClick={() => handleToggleComplete(item.id)}
+                className={cn(
+                  "flex aspect-square size-5 shrink-0 items-center justify-center rounded-md border-2 transition-all cursor-pointer",
+                  item.completed
+                    ? cn("border-transparent text-white", item.color)
+                    : "border-muted-foreground/30 bg-transparent"
+                )}
+              >
+                {item.completed && <Check className="size-3" />}
+              </button>
+
+              {/* Task Title */}
+              <div className="flex-1">
+                <span
+                  className={cn(
+                    "text-sm",
+                    item.completed && "line-through text-muted-foreground"
+                  )}
+                >
+                  {item.title}
+                </span>
+                {item.time && (
+                  <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" />
+                    {item.time}
                   </div>
                 )}
-                <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
               </div>
-            </CollapsibleTrigger>
+            </div>
 
-            <CollapsibleContent>
-              <div className="mt-1.5 space-y-0.5">
-                {calendar.items.map((item) => (
-                  <div key={item.id} className="group/calendar-item">
-                    <div className="flex items-center justify-between p-2.5 hover:bg-accent/50 rounded-lg cursor-pointer transition-colors">
-                      <div className="flex items-center gap-3 flex-1">
-                        <button
-                          onClick={() => handleToggleVisibility(item.id)}
-                          className={cn(
-                            "flex aspect-square w-5 h-5 shrink-0 items-center justify-center rounded-md border-2 transition-all",
-                            item.visible
-                              ? cn("border-transparent text-white shadow-sm", item.color)
-                              : "border-muted-foreground/30 bg-transparent"
-                          )}
-                        >
-                          {item.visible && <Check className="size-3" />}
-                        </button>
-
-                        <span
-                          className={cn(
-                            "flex-1 truncate text-sm font-medium",
-                            !item.visible && "text-muted-foreground"
-                          )}
-                          onClick={() => handleToggleVisibility(item.id)}
-                        >
-                          {item.name}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1 opacity-0 group-hover/calendar-item:opacity-100 transition-opacity">
-                        {item.visible ? (
-                          <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-                        ) : (
-                          <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
-                        )}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <div
-                              className="h-6 w-6 flex items-center justify-center p-0 cursor-pointer hover:bg-accent rounded-md"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-3.5 w-3.5" />
-                            </div>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" side="right">
-                            <DropdownMenuItem
-                              onClick={() => onCalendarEdit?.(item.id)}
-                            >
-                              Edit calendar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleToggleVisibility(item.id)}
-                            >
-                              {item.visible ? "Hide" : "Show"} calendar
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => onCalendarDelete?.(item.id)}
-                              className="text-destructive"
-                            >
-                              Delete calendar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+            {/* More Options */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div
+                  className="h-5 w-5 flex items-center justify-center p-0 opacity-0 group-hover/task-item:opacity-100 cursor-pointer hover:bg-accent rounded-sm"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="h-3 w-3" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="right">
+                <DropdownMenuItem
+                  onClick={() => onTaskEdit?.(item.id)}
+                  className="cursor-pointer"
+                >
+                  Edit task
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleToggleComplete(item.id)}
+                  className="cursor-pointer"
+                >
+                  {item.completed ? "Mark incomplete" : "Mark complete"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => onTaskDelete?.(item.id)}
+                  className="cursor-pointer text-destructive"
+                >
+                  Delete task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       ))}
     </div>

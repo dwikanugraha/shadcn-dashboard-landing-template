@@ -17,10 +17,10 @@ export function Calendar({ events, eventDates }: CalendarProps) {
 
   return (
     <>
-      <div className="rounded-xl bg-background border overflow-hidden shadow-sm">
+      <div className="border rounded-lg bg-background relative">
         <div className="flex min-h-[800px]">
           {/* Desktop Sidebar - Hidden on mobile/tablet, shown on extra large screens */}
-          <div className="hidden xl:block w-80 flex-shrink-0 border-r bg-muted/20">
+          <div className="hidden xl:block w-80 flex-shrink-0 border-r">
             <CalendarSidebar
               selectedDate={calendar.selectedDate}
               onDateSelect={calendar.handleDateSelect}
@@ -46,9 +46,9 @@ export function Calendar({ events, eventDates }: CalendarProps) {
         {/* Mobile/Tablet Sheet - Positioned relative to calendar container */}
         <Sheet open={calendar.showCalendarSheet} onOpenChange={calendar.setShowCalendarSheet}>
           <SheetContent side="left" className="w-80 p-0" style={{ position: 'absolute' }}>
-            <SheetHeader className="p-5 pb-3 border-b">
-              <SheetTitle className="text-lg font-semibold">Calendar</SheetTitle>
-              <SheetDescription className="text-sm">
+            <SheetHeader className="p-4 pb-2">
+              <SheetTitle>Calendar</SheetTitle>
+              <SheetDescription>
                 Browse dates and manage your calendar events
               </SheetDescription>
             </SheetHeader>

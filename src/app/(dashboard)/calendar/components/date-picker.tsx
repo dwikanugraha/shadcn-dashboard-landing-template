@@ -1,9 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar as CalendarIcon } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
 
 interface DatePickerProps {
   selectedDate?: Date
@@ -21,6 +19,7 @@ export function DatePicker({ selectedDate, onDateSelect, events = [] }: DatePick
     }
   }
 
+  // Create a map of dates with events for styling
   const eventDates = events.reduce((acc, event) => {
     const dateKey = event.date.toDateString()
     acc[dateKey] = event.count
@@ -33,7 +32,7 @@ export function DatePicker({ selectedDate, onDateSelect, events = [] }: DatePick
         mode="single"
         selected={date}
         onSelect={handleDateSelect}
-        className="w-full rounded-lg border-0 shadow-sm [&_[role=gridcell]_button]:cursor-pointer [&_button]:cursor-pointer"
+        className="w-full [&_[role=gridcell]_button]:cursor-pointer [&_button]:cursor-pointer"
         modifiers={{
           hasEvents: (date) => {
             const eventCount = eventDates[date.toDateString()]
@@ -41,7 +40,7 @@ export function DatePicker({ selectedDate, onDateSelect, events = [] }: DatePick
           }
         }}
         modifiersClassNames={{
-          hasEvents: "relative after:absolute after:bottom-1.5 after:right-1.5 after:w-1.5 after:h-1.5 after:bg-primary after:rounded-full after:shadow-sm"
+          hasEvents: "relative after:absolute after:bottom-1 after:right-1 after:w-1.5 after:h-1.5 after:bg-primary after:rounded-full"
         }}
       />
     </div>
